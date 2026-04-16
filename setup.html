@@ -1,0 +1,253 @@
+{% extends "layout.html" %}
+
+{% block title %}Setup - AI Mention Tracker{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto py-10 px-6">
+    <div class="mb-10 text-center">
+        <h2 class="text-3xl font-extrabold text-gray-900 mb-2">AI Mention & Discovery Tool</h2>
+        <p class="text-lg text-gray-600">Track mentions for specific keywords OR discover new citations by your brand name.</p>
+    </div>
+
+    <!-- Mode 1: Keyword Monitor -->
+    <div class="space-y-8">
+        <div class="flex items-center gap-2 pb-2 border-b-2 border-blue-600 mb-6">
+            <h3 class="text-2xl font-bold text-gray-800">Option A: Keyword Mention Monitor</h3>
+        </div>
+
+        <form id="setupForm" class="space-y-8">
+            <!-- Credentials -->
+            <div class="bg-white rounded-xl shadow-lg border border-gray-100 p-8">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">DataForSEO Login</label>
+                        <input type="text" name="api_login" placeholder="email@example.com" required class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 outline-none transition">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">DataForSEO Password</label>
+                        <input type="password" name="api_password" placeholder="••••••••" required class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 outline-none transition">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Brand Info -->
+            <div class="bg-white rounded-xl shadow-lg border border-gray-100 p-8">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">Your Brand Domain</label>
+                        <input type="text" name="brand_domain" placeholder="example.com" required class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 outline-none transition">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">Your Brand Name</label>
+                        <input type="text" name="brand_name" placeholder="Brand Name" required class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 outline-none transition">
+                    </div>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">Target Country</label>
+                        <select name="country" id="countrySelect" class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 outline-none transition">
+                            <option value="India">India</option>
+                            <option value="United States">United States</option>
+                            <option value="United Kingdom">United Kingdom</option>
+                            <option value="United Arab Emirates">United Arab Emirates</option>
+                            <option value="Germany">Germany</option>
+                            <option value="Norway">Norway</option>
+                            <option value="Canada">Canada</option>
+                            <option value="Australia">Australia</option>
+                            <option value="Singapore">Singapore</option>
+                            <option value="France">France</option>
+                            <option value="Japan">Japan</option>
+                            <option value="Brazil">Brazil</option>
+                            <option value="Netherlands">Netherlands</option>
+                            <option value="Spain">Spain</option>
+                            <option value="Italy">Italy</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">Target City / Region</label>
+                        <select name="location" id="citySelect" class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 outline-none transition">
+                            <option value="India">Entire Country</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="mt-4">
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">Search Language</label>
+                    <select name="language" class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 outline-none transition">
+                        <option value="en">English (en)</option>
+                        <option value="de">German (de)</option>
+                        <option value="no">Norwegian (no)</option>
+                        <option value="fr">French (fr)</option>
+                        <option value="hi">Hindi (hi)</option>
+                        <option value="ar">Arabic (ar)</option>
+                        <option value="es">Spanish (es)</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Competitors -->
+            <div class="bg-white rounded-xl shadow-lg border border-gray-100 p-8">
+                <div id="competitorRows" class="space-y-3 mb-4">
+                    <div class="flex gap-2 competitor-row">
+                        <input type="text" placeholder="competitor-1.com" class="flex-grow px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 outline-none transition competitor-input">
+                    </div>
+                </div>
+                <button type="button" id="addCompetitor" class="text-blue-600 font-semibold hover:text-blue-800 transition">+ Add Another Competitor</button>
+            </div>
+
+            <!-- Keywords -->
+            <div class="bg-white rounded-xl shadow-lg border border-gray-100 p-8">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">High-Volume Keywords (one per line)</label>
+                        <textarea name="high_volume_keywords" rows="4" placeholder="best software company&#10;top agency" class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 outline-none transition"></textarea>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">Brand/Niche Keywords (one per line)</label>
+                        <textarea name="brand_niche_keywords" rows="4" placeholder="brand reviews&#10;brand services" class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 outline-none transition"></textarea>
+                    </div>
+                </div>
+            </div>
+
+            <button type="submit" class="w-full py-4 bg-blue-600 hover:bg-blue-700 text-white font-bold text-xl rounded-xl shadow-xl transform transition active:scale-[0.98]">
+                Run AI Mention Monitor
+            </button>
+        </form>
+    </div>
+
+    <!-- Divider -->
+    <div class="my-16 flex items-center gap-4">
+        <div class="flex-grow border-t-2 border-dashed border-gray-200"></div>
+        <span class="text-gray-400 font-bold text-xl">OR</span>
+        <div class="flex-grow border-t-2 border-dashed border-gray-200"></div>
+    </div>
+
+    <!-- Mode 2: Brand Discovery -->
+    <div class="space-y-8">
+        <div class="flex items-center gap-2 pb-2 border-b-2 border-purple-600 mb-6">
+            <h3 class="text-2xl font-bold text-gray-800">Option B: Brand Citation Discovery</h3>
+        </div>
+
+        <form id="discoveryForm" class="space-y-8">
+            <div class="bg-white rounded-xl shadow-lg border border-gray-100 p-8">
+                <p class="text-gray-600 mb-8 italic">No keywords needed. We will scan all major AI platforms to find where your brand is currently being cited.</p>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">Discovery Login</label>
+                        <input type="text" id="disc_api_login" placeholder="email@example.com" required class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-purple-500 outline-none transition">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">Discovery Password</label>
+                        <input type="password" id="disc_api_password" placeholder="••••••••" required class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-purple-500 outline-none transition">
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">Your Brand Name (exactly as cited)</label>
+                    <input type="text" id="disc_brand_name" placeholder="Deftsoft" required class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-purple-500 outline-none transition">
+                </div>
+            </div>
+
+            <button type="submit" id="btnRunDiscovery" class="w-full py-4 bg-purple-600 hover:bg-purple-700 text-white font-bold text-xl rounded-xl shadow-xl transform transition active:scale-[0.98]">
+                Discover Brand Citations
+            </button>
+            <div id="discoveryStatus" class="hidden text-center p-4 bg-gray-50 rounded-lg border border-dashed border-gray-300">
+                <div class="inline-block animate-spin rounded-full h-4 w-4 border-t-2 border-b-2 border-purple-600 mr-2"></div>
+                Finding citations across 5 platforms... This may take a minute.
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    // 1. Competitor Dynamic Rows
+    const competitorRows = document.getElementById('competitorRows');
+    const addCompetitorBtn = document.getElementById('addCompetitor');
+
+    addCompetitorBtn.onclick = () => {
+        const div = document.createElement('div');
+        div.className = 'flex gap-2 competitor-row mt-3';
+        div.innerHTML = `
+            <input type="text" placeholder="competitor.com" class="flex-grow px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 transition competitor-input">
+            <button type="button" onclick="this.parentElement.remove()" class="px-3 py-2 text-gray-400 hover:text-red-500">×</button>
+        `;
+        competitorRows.appendChild(div);
+    };
+
+    // 2. Monitor Form Submit
+    document.getElementById('setupForm').onsubmit = async (e) => {
+        e.preventDefault();
+        const data = {
+            api_login: e.target.api_login.value,
+            api_password: e.target.api_password.value,
+            brand_domain: e.target.brand_domain.value,
+            brand_name: e.target.brand_name.value,
+            country: e.target.country.value,
+            location: e.target.location.value, // This is the City or Country location_name
+            language: e.target.language.value,
+            high_volume_keywords: e.target.high_volume_keywords.value,
+            brand_niche_keywords: e.target.brand_niche_keywords.value,
+            competitors: Array.from(document.querySelectorAll('.competitor-input')).map(i => i.value).filter(v => v.trim())
+        };
+        const res = await fetch('/api/run', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(data)});
+        const out = await res.json();
+        if (out.status === 'success') window.location.href = out.redirect;
+    };
+
+    // 4. Dynamic City Data
+    const countryToCities = {
+        "India": ["Delhi", "Mumbai", "Bangalore", "Mohali", "Chandigarh", "Gurgaon"],
+        "United States": ["New York", "Los Angeles", "Chicago", "San Francisco", "Austin", "Miami"],
+        "United Kingdom": ["London", "Manchester", "Birmingham", "Edinburgh", "Glasgow"],
+        "United Arab Emirates": ["Dubai", "Abu Dhabi", "Sharjah", "Ajman"],
+        "Germany": ["Berlin", "Munich", "Frankfurt", "Hamburg", "Stuttgart"],
+        "Norway": ["Oslo", "Bergen", "Stavanger", "Trondheim"],
+        "Canada": ["Toronto", "Vancouver", "Montreal", "Ottawa"],
+        "Australia": ["Sydney", "Melbourne", "Brisbane", "Perth"],
+        "Singapore": ["Singapore"],
+        "France": ["Paris", "Lyon", "Marseille"],
+        "Japan": ["Tokyo", "Osaka", "Kyoto"],
+        "Brazil": ["São Paulo", "Rio de Janeiro"],
+        "Netherlands": ["Amsterdam", "Rotterdam"],
+        "Spain": ["Madrid", "Barcelona"],
+        "Italy": ["Rome", "Milan"]
+    };
+
+    const countrySelect = document.getElementById('countrySelect');
+    const citySelect = document.getElementById('citySelect');
+
+    countrySelect.onchange = () => {
+        const country = countrySelect.value;
+        const cities = countryToCities[country] || [];
+        
+        citySelect.innerHTML = `<option value="${country}">Entire ${country}</option>`;
+        cities.forEach(city => {
+            const opt = document.createElement('option');
+            opt.value = `${city},${country}`;
+            opt.innerHTML = city;
+            citySelect.appendChild(opt);
+        });
+    };
+
+    // 3. Discovery Form Submit
+    document.getElementById('discoveryForm').onsubmit = async (e) => {
+        e.preventDefault();
+        const data = {
+            api_login: document.getElementById('disc_api_login').value,
+            api_password: document.getElementById('disc_api_password').value,
+            brand_name: document.getElementById('disc_brand_name').value
+        };
+        document.getElementById('discoveryStatus').classList.remove('hidden');
+        document.getElementById('btnRunDiscovery').disabled = true;
+        document.getElementById('btnRunDiscovery').classList.add('opacity-50');
+
+        const res = await fetch('/api/discover', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(data)});
+        const out = await res.json();
+        if (out.status === 'success') window.location.href = `/discovery/${encodeURIComponent(data.brand_name)}`;
+        else { 
+            alert(out.message || 'Error'); 
+            document.getElementById('discoveryStatus').classList.add('hidden');
+            document.getElementById('btnRunDiscovery').disabled = false;
+            document.getElementById('btnRunDiscovery').classList.remove('opacity-50');
+        }
+    };
+</script>
+{% endblock %}

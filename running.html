@@ -1,0 +1,129 @@
+{% extends "layout.html" %}
+
+{% block title %}Running - AI Mention Tracker{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto py-12 px-6">
+    <div class="bg-white rounded-2xl shadow-xl border border-gray-100 p-10 text-center">
+        <div id="statusIcon" class="mb-6 flex justify-center">
+            <div class="w-16 h-16 border-4 border-blue-200 border-t-blue-600 rounded-full animate-spin"></div>
+        </div>
+        
+        <h2 id="statusTitle" class="text-3xl font-bold text-gray-900 mb-2">Tracking Mentions...</h2>
+        <p id="statusDesc" class="text-gray-600 mb-8 italic">Analyzing keywords across AI platforms. This may take a few minutes.</p>
+
+        <div class="w-full bg-gray-200 rounded-full h-4 mb-4 overflow-hidden">
+            <div id="progressBar" class="accent-bg h-full transition-all duration-300 ease-linear" style="width: 0%"></div>
+        </div>
+        <div class="flex justify-between text-sm font-medium text-gray-500 mb-10">
+            <span id="progressPercent">0% Complete</span>
+            <span id="timeRemaining">Estimated: Calculating...</span>
+        </div>
+
+        <!-- Live Log -->
+        <div class="text-left bg-gray-900 rounded-xl p-6 font-mono text-sm h-64 overflow-y-auto shadow-inner" id="logContainer">
+            <div class="text-blue-400 mb-2">✦ Connecting to AI platforms...</div>
+            <!-- Log entries will be added here -->
+        </div>
+
+        <div class="mt-8 flex justify-center gap-4">
+            <button id="cancelBtn" class="px-6 py-2 border border-red-200 text-red-600 font-semibold rounded-lg hover:bg-red-50 transition">
+                Cancel Run
+            </button>
+            <button id="viewResults" class="hidden px-8 py-3 accent-bg text-white font-bold rounded-lg hover:opacity-90 shadow-lg transform active:scale-95 transition">
+                View Dashboard
+            </button>
+        </div>
+    </div>
+</div>
+
+<script>
+    const logContainer = document.getElementById('logContainer');
+    const progressBar = document.getElementById('progressBar');
+    const progressPercent = document.getElementById('progressPercent');
+    const statusTitle = document.getElementById('statusTitle');
+    const statusDesc = document.getElementById('statusDesc');
+    const statusIcon = document.getElementById('statusIcon');
+    const viewResultsBtn = document.getElementById('viewResults');
+    const cancelBtn = document.getElementById('cancelBtn');
+
+    let runId = null;
+    let startTime = Date.now();
+
+    function addLog(msg, color = 'text-gray-300') {
+        const div = document.createElement('div');
+        div.className = color + ' mb-1';
+        div.textContent = msg;
+        logContainer.appendChild(div);
+        logContainer.scrollTop = logContainer.scrollHeight;
+    }
+
+    const eventSource = new EventSource('/stream');
+
+    eventSource.onmessage = (event) => {
+        const data = JSON.parse(event.data);
+        
+        if (data.error) {
+            addLog(`✗ Error: ${data.error}`, 'text-red-400');
+            eventSource.close();
+            return;
+        }
+
+        if (data.progress !== undefined) {
+            progressBar.style.width = data.progress + '%';
+            progressPercent.textContent = data.progress + '% Complete';
+            
+            // Time remaining estimation
+            const elapsed = (Date.now() - startTime) / 1000;
+            if (data.progress > 0) {
+                const totalEstimatedSeconds = (elapsed / data.progress) * 100;
+                const remaining = Math.max(0, Math.round(totalEstimatedSeconds - elapsed));
+                const minutes = Math.floor(remaining / 60);
+                const seconds = remaining % 60;
+                document.getElementById('timeRemaining').textContent = 
+                    `Estimated: ${minutes}m ${seconds}s remaining`;
+            }
+        }
+
+        if (data.message) {
+            const isError = data.message.includes('✗');
+            const isSuccess = data.message.includes('✓');
+            addLog(data.message, isError ? 'text-red-400' : (isSuccess ? 'text-green-400' : 'text-gray-300'));
+        }
+
+        if (data.status === 'done') {
+            runId = data.run_id;
+            eventSource.close();
+            
+            statusTitle.textContent = "Run Completed!";
+            statusDesc.textContent = "Successfully analyzed all keywords and platforms.";
+            statusIcon.innerHTML = `
+                <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center text-green-600">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7" />
+                    </svg>
+                </div>
+            `;
+            
+            viewResultsBtn.classList.remove('hidden');
+            cancelBtn.classList.add('hidden');
+            
+            viewResultsBtn.onclick = () => {
+                window.location.href = `/dashboard/${runId}`;
+            };
+        }
+    };
+
+    eventSource.onerror = (err) => {
+        addLog('✗ Connection error. API might be processing long requests or session timed out.', 'text-red-400');
+        eventSource.close();
+    };
+
+    cancelBtn.onclick = () => {
+        if (confirm('Are you sure you want to cancel the tracking?')) {
+            eventSource.close();
+            window.location.href = '/';
+        }
+    };
+</script>
+{% endblock %}

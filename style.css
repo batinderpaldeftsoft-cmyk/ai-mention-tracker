@@ -1,0 +1,59 @@
+/* Custom Styles for AI Mention Tracker */
+
+:root {
+    --accent: #4361ee;
+    --accent-hover: #3a56d4;
+    --navy: #1a1a2e;
+}
+
+/* Custom scrollbar for raw response areas */
+.overflow-y-auto::-webkit-scrollbar {
+    width: 6px;
+}
+
+.overflow-y-auto::-webkit-scrollbar-track {
+    background: #f1f1f1;
+}
+
+.overflow-y-auto::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 10px;
+}
+
+.overflow-y-auto::-webkit-scrollbar-thumb:hover {
+    background: #94a3b8;
+}
+
+/* Animation utilities */
+.hover-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+}
+
+/* Accordion transition for dashboard */
+.accordion-item .chevron {
+    transition: transform 0.3s ease;
+}
+
+/* Table styling fixes */
+th {
+    white-space: nowrap;
+}
+
+/* PDF/Print adjustments for reports */
+@media print {
+    .no-print {
+        display: none !important;
+    }
+    .shadow-lg, .shadow-xl, .shadow-md {
+        box-shadow: none !important;
+        border: 1px solid #e2e8f0 !important;
+    }
+    body {
+        background-color: white !important;
+    }
+    canvas {
+        max-width: 100% !important;
+        height: auto !important;
+    }
+}

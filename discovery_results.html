@@ -1,0 +1,175 @@
+{% extends "layout.html" %}
+
+{% block title %}Brand Citations - {{ brand_name }}{% endblock %}
+
+{% block content %}
+<div class="max-w-6xl mx-auto py-10 px-6">
+    <!-- Header Section -->
+    <div class="mb-10 flex flex-col md:flex-row md:items-end justify-between gap-6">
+        <div>
+            <nav class="flex mb-4 text-sm text-gray-500" aria-label="Breadcrumb">
+                <ol class="inline-flex items-center space-x-1 md:space-x-3">
+                    <li class="inline-flex items-center">
+                        <a href="/" class="hover:text-blue-600">Setup</a>
+                    </li>
+                    <li>
+                        <div class="flex items-center">
+                            <svg class="w-6 h-6 text-gray-400" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"></path></svg>
+                            <span class="ml-1 md:ml-2 font-medium text-gray-700">Discovery Results</span>
+                        </div>
+                    </li>
+                </ol>
+            </nav>
+            <h2 class="text-4xl font-extrabold text-gray-900 mb-2">Discovery Report: <span class="accent-text text-blue-600">{{ brand_name }}</span></h2>
+            <p class="text-lg text-gray-600">All search terms and AI platforms where your brand was naturally cited.</p>
+        </div>
+        
+        <div class="flex gap-3">
+            <button onclick="window.print()" class="px-5 py-2.5 bg-white border border-gray-200 rounded-lg shadow-sm hover:bg-gray-50 flex items-center gap-2 font-semibold text-gray-700 transition">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
+                </svg>
+                Print Report
+            </button>
+            <a href="/" class="px-5 py-2.5 accent-bg text-white rounded-lg shadow-md hover:opacity-90 flex items-center gap-2 font-semibold transition">
+                New Discovery Scan
+            </a>
+        </div>
+    </div>
+
+    <!-- Summary Stats -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
+        <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 flex items-center gap-4">
+            <div class="w-12 h-12 rounded-xl bg-blue-50 flex items-center justify-center text-blue-600">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 20l4-16m2 16l4-16M6 9h14M4 15h14" />
+                </svg>
+            </div>
+            <div>
+                <p class="text-sm font-medium text-gray-500">Search Terms Found</p>
+                <p class="text-2xl font-bold text-gray-900">{{ results|count }}</p>
+            </div>
+        </div>
+        
+        <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 flex items-center gap-4">
+            <div class="w-12 h-12 rounded-xl bg-purple-50 flex items-center justify-center text-purple-600">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.040L3 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622l-1.618-3.016z" />
+                </svg>
+            </div>
+            <div>
+                <p class="text-sm font-medium text-gray-500">Discovery Accuracy</p>
+                <p class="text-2xl font-bold text-gray-900">Highest (API-Driven)</p>
+            </div>
+        </div>
+
+        <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 flex items-center gap-4">
+            <div class="w-12 h-12 rounded-xl bg-green-50 flex items-center justify-center text-green-600">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+            </div>
+            <div>
+                <p class="text-sm font-medium text-gray-500">Last Scanned</p>
+                <p class="text-xl font-bold text-gray-900">{{ results[0].timestamp if results else 'N/A' }}</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Results Table -->
+    <div class="bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden">
+        <div class="px-8 py-6 border-b border-gray-100 flex items-center justify-between">
+            <h3 class="text-xl font-bold text-gray-800">Citations by Search Term</h3>
+            <div class="flex items-center gap-2">
+                <span class="flex items-center gap-1 text-xs font-semibold px-2 py-1 rounded bg-blue-100 text-blue-700">
+                    <span class="w-2 h-2 rounded-full bg-blue-500"></span> Google AI
+                </span>
+                <span class="flex items-center gap-1 text-xs font-semibold px-2 py-1 rounded bg-green-100 text-green-700">
+                    <span class="w-2 h-2 rounded-full bg-green-500"></span> ChatGPT
+                </span>
+            </div>
+        </div>
+        
+        <div class="overflow-x-auto">
+            <table class="w-full text-left">
+                <thead>
+                <thead>
+                    <tr class="bg-gray-50 text-gray-500 text-xs uppercase tracking-wider">
+                        <th class="px-8 py-4 font-bold">Search Term (Keyword)</th>
+                        <th class="px-8 py-4 font-bold">Visibility Across Platforms</th>
+                        <th class="px-8 py-4 font-bold text-center">API Frequency</th>
+                        <th class="px-8 py-4 font-bold">Cited Sources (Google/GPT)</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-gray-100">
+                    {% if not results %}
+                    <tr>
+                        <td colspan="4" class="px-8 py-20 text-center text-gray-500">
+                            No citations found. Try a different brand variation.
+                        </td>
+                    </tr>
+                    {% endif %}
+                    
+                    {% for item in results %}
+                    <tr class="hover:bg-gray-50 transition">
+                        <td class="px-8 py-5">
+                            <span class="font-bold text-gray-800">{{ item.keyword }}</span>
+                            <div class="text-[10px] text-gray-400 mt-1 uppercase tracking-tighter">Discovered on: {{ item.platform }}</div>
+                        </td>
+                        <td class="px-8 py-5">
+                            <div class="flex items-center gap-4">
+                                {% set pm = item.cross_platform_mentions %}
+                                <div class="flex flex-col items-center gap-1" title="Google AI Mode">
+                                    <div class="w-2 h-2 rounded-full {{ 'bg-green-500 shadow-[0_0_8px_rgba(34,197,94,0.6)]' if pm.google else 'bg-gray-300' }}"></div>
+                                    <span class="text-[9px] font-bold {{ 'text-green-700' if pm.google else 'text-gray-400' }}">GGL</span>
+                                </div>
+                                <div class="flex flex-col items-center gap-1" title="ChatGPT">
+                                    <div class="w-2 h-2 rounded-full {{ 'bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.6)]' if pm.chat_gpt else 'bg-gray-300' }}"></div>
+                                    <span class="text-[9px] font-bold {{ 'text-emerald-700' if pm.chat_gpt else 'text-gray-400' }}">GPT</span>
+                                </div>
+                                <div class="flex flex-col items-center gap-1" title="Perplexity">
+                                    <div class="w-2 h-2 rounded-full {{ 'bg-blue-500 shadow-[0_0_8px_rgba(59,130,246,0.6)]' if pm.perplexity else 'bg-gray-300' }}"></div>
+                                    <span class="text-[9px] font-bold {{ 'text-blue-700' if pm.perplexity else 'text-gray-400' }}">PPL</span>
+                                </div>
+                                <div class="flex flex-col items-center gap-1" title="Gemini">
+                                    <div class="w-2 h-2 rounded-full {{ 'bg-indigo-500 shadow-[0_0_8px_rgba(99,102,241,0.6)]' if pm.gemini else 'bg-gray-300' }}"></div>
+                                    <span class="text-[9px] font-bold {{ 'text-indigo-700' if pm.gemini else 'text-gray-400' }}">GEM</span>
+                                </div>
+                                <div class="flex flex-col items-center gap-1" title="Claude">
+                                    <div class="w-2 h-2 rounded-full {{ 'bg-purple-500 shadow-[0_0_8_rgba(168,85,247,0.6)]' if pm.claude else 'bg-gray-300' }}"></div>
+                                    <span class="text-[9px] font-bold {{ 'text-purple-700' if pm.claude else 'text-gray-400' }}">CLD</span>
+                                </div>
+                            </div>
+                        </td>
+                        <td class="px-8 py-5 text-center">
+                            <span class="text-sm font-semibold text-gray-700 bg-gray-100 px-2 py-1 rounded">{{ item.mentions_count }}</span>
+                        </td>
+                        <td class="px-8 py-5">
+                            {% if item.quoted_links %}
+                            <div class="flex flex-wrap gap-2">
+                                {% for link in item.quoted_links %}
+                                <a href="{{ link }}" target="_blank" class="text-xs text-blue-600 hover:underline max-w-[150px] truncate block opacity-70 hover:opacity-100">
+                                    {{ link|replace('https://', '')|replace('http://', '') }}
+                                </a>
+                                {% endfor %}
+                            </div>
+                            {% else %}
+                            <span class="text-gray-400 text-xs italic">No links cited</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<style>
+@media print {
+    .max-w-6xl { max-width: 100% !important; }
+    button, a[href="/"] { display: none !important; }
+    .shadow-xl { box-shadow: none !important; border: 1px solid #eee !important; }
+}
+</style>
+{% endblock %}
